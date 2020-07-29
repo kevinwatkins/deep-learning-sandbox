@@ -13,11 +13,17 @@ outs = [o['data']['image/png']
     if 'image/png' in o['data']
 ]
 
+manifest = []
+
 def save_image(name, index):
     if index >= len(outs):
         return
+    manifest.append(name + '\n')
     with open(os.path.join(outdir, name), 'wb') as f:
         f.write(base64.b64decode(outs[index]))
 
 save_image('table.png', 0)
 save_image('plot.png', 1)
+
+with open(os.path.join(outdir, "MANIFEST"), 'w') as f:
+    f.writelines(manifest)
