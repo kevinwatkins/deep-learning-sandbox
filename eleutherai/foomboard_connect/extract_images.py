@@ -1,6 +1,7 @@
 import sys, json, base64, os.path, mistune
 
-outdir = sys.argv[1]
+scriptdir = sys.argv[1]
+outdir = sys.argv[2]
 
 with open('out.ipynb', 'r') as f:
     j = json.load(f)
@@ -23,6 +24,8 @@ def save_output_cell(name, index, dtype, wrapper=None):
     data = outs[index][dtype]
     mode = 'w'
     if dtype == 'text/markdown':
+        if isinstance(data, list):
+            data = ''.join(data)
         data = mistune.markdown(data)
         if wrapper:
             with open(wrapper, 'r') as f:
@@ -37,7 +40,7 @@ def save_output_cell(name, index, dtype, wrapper=None):
     with open(os.path.join(outdir, name), mode) as f:
         f.write(data)
 
-save_output_cell('table.html', 0, 'text/markdown', wrapper='table_wrapper.html')
+save_output_cell('table.html', 0, 'text/markdown', wrapper=os.path.join(scriptdir, 'table_wrapper.html'))
 save_output_cell('plot.png', 1, 'image/png')
 
 with open(os.path.join(outdir, 'MANIFEST'), 'w') as f:
